@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diseñador de Informes Qlik Cloud</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#034693;--blue-d:#022f62;--blue-l:#DBEAFE;--blue-m:#1D6BD4;
+  --green:#009345;--green-l:#DCFCE7;
+  --slate:#64748B;--border:#E2E8F0;--bg:#EEF2F7;
+  --text:#0F172A;--surface:#fff;--radius:16px;
+  --shadow:0 4px 32px rgba(3,70,147,.12);
+}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% -10%,rgba(3,70,147,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 50% at 85% 110%,rgba(0,147,69,.06) 0%,transparent 55%);
+  display:flex;justify-content:center;
+  padding:28px 12px 60px;min-height:100vh;
+}
+.wrap{width:100%;max-width:720px}
+
+/* badge */
+.top-badge{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:0 2px}
+.brand-pill{background:var(--blue);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:4px 12px;border-radius:20px}
+.ver{font-size:11px;color:var(--slate)}
+
+/* card */
+.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+
+/* header */
+.hdr{
+  background:linear-gradient(140deg,var(--blue-d) 0%,var(--blue) 55%,#1a5fbb 100%);
+  padding:22px 28px 20px;position:relative;overflow:hidden;
+}
+.hdr::before{
+  content:'';position:absolute;right:-60px;top:-60px;
+  width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 70%);
+}
+.hdr::after{
+  content:'';position:absolute;left:-30px;bottom:-50px;
+  width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,147,69,.12) 0%,transparent 70%);
+}
+.hdr h1{font-size:17px;font-weight:800;color:#fff;display:flex;align-items:center;gap:9px;position:relative;z-index:1}
+.hdr p{font-size:12px;color:rgba(255,255,255,.65);margin-top:5px;position:relative;z-index:1}
+
+/* progress */
+.prog-track{height:3px;background:rgba(255,255,255,.15)}
+.prog-fill{height:3px;background:linear-gradient(90deg,#00c853,#2979ff);transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+/* step nav */
+.stepinfo{padding:13px 28px;background:#F8FAFB;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{height:5px;border-radius:4px;background:#CBD5E1;transition:all .3s cubic-bezier(.4,0,.2,1);width:22px}
+.dot.active{background:var(--blue);width:32px}
+.dot.done{background:var(--green)}
+.steplbl{font-size:11.5px;color:var(--slate);font-weight:600}
+
+/* body */
+.body{padding:26px 28px;display:flex;flex-direction:column;gap:22px}
+.sectitle{font-size:10.5px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:1.1px;padding-bottom:13px;border-bottom:2px solid var(--blue-l);display:flex;align-items:center;gap:8px}
+.snum{background:var(--blue);color:#fff;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+.group{display:flex;flex-direction:column;gap:8px}
+.qlabel{font-size:13px;font-weight:700;color:var(--text)}
+.qlabel .opt{font-size:11px;font-weight:400;color:var(--slate);margin-left:5px}
+.hint-box{background:linear-gradient(135deg,#EFF6FF,#F0FDF4);border:1px solid #BFDBFE;border-radius:10px;padding:10px 14px;font-size:12px;color:#2563EB;display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+
+/* pills */
+.pills{display:flex;flex-wrap:wrap;gap:7px}
+.pill{padding:7px 15px;border-radius:20px;font-size:12.5px;cursor:pointer;border:1.5px solid #CBD5E1;background:#fff;color:#475569;transition:all .15s;user-select:none;font-weight:500}
+.pill:hover{border-color:var(--blue-m);color:var(--blue-m);background:#EFF6FF}
+.pill.on{border:2px solid var(--blue);background:var(--blue-l);color:var(--blue);font-weight:700}
+.multi-badge{font-size:10px;color:var(--slate);background:#F1F5F9;border-radius:4px;padding:2px 6px;margin-left:5px;font-weight:500;vertical-align:middle}
+
+/* cards */
+.cards-wrap{display:flex;flex-wrap:wrap;gap:10px}
+.pcard{border:1.5px solid #CBD5E1;border-radius:12px;padding:13px 15px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;transition:all .15s;min-width:148px;background:#fff;user-select:none}
+.pcard:hover{border-color:var(--blue-m);box-shadow:0 2px 12px rgba(3,70,147,.12);transform:translateY(-1px)}
+.pcard.on{border:2px solid var(--blue);background:var(--blue-l);box-shadow:0 2px 14px rgba(3,70,147,.18)}
+.pcard .icon{font-size:22px}
+.pcard .ct{font-size:13px;font-weight:700;color:#0F172A}
+.pcard .cs{font-size:11px;color:#94A3B8;margin-top:2px}
+
+/* tiles */
+.tiles-wrap{display:flex;flex-wrap:wrap;gap:10px}
+.ptile{border:1.5px solid #CBD5E1;border-radius:12px;padding:16px 14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:105px;background:#fff;transition:all .15s;user-select:none;text-align:center}
+.ptile:hover{border-color:var(--blue-m);box-shadow:0 2px 12px rgba(3,70,147,.12);transform:translateY(-1px)}
+.ptile.on{border:2px solid var(--blue);background:var(--blue-l);box-shadow:0 2px 14px rgba(3,70,147,.18)}
+.ptile .ti{font-size:26px}
+.ptile .tl{font-size:12.5px;font-weight:700;color:#0F172A}
+
+/* inputs */
+input[type=text],textarea{width:100%;border:1.5px solid #CBD5E1;border-radius:10px;padding:10px 13px;font-size:13px;font-family:inherit;color:var(--text);background:#fff;transition:border-color .15s,box-shadow .15s}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(3,70,147,.1)}
+textarea{min-height:82px;resize:vertical}
+
+/* logo */
+.logo-box{border:2px dashed #CBD5E1;border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;background:#F8FAFF;transition:all .15s}
+.logo-box:hover{border-color:var(--blue);background:#EFF6FF}
+.logo-ph{width:54px;height:54px;background:#E2E8F0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.logo-lt{font-size:13px;font-weight:700;color:var(--blue)}
+.logo-ls{font-size:11px;color:#94A3B8;margin-top:2px}
+
+/* footer */
+.footer{padding:15px 28px;border-top:1px solid var(--border);background:#F8FAFB;display:flex;justify-content:space-between;align-items:center}
+.btn-back{border:1.5px solid #CBD5E1;border-radius:10px;padding:10px 22px;font-size:13px;cursor:pointer;background:#fff;color:#555;font-family:inherit;font-weight:600;transition:all .15s}
+.btn-back:disabled{opacity:.3;cursor:default}
+.btn-back:not(:disabled):hover{border-color:var(--blue-m);color:var(--blue-m)}
+.btn-next{border:none;border-radius:10px;padding:10px 28px;font-size:13px;font-weight:800;color:#fff;cursor:pointer;background:var(--blue);font-family:inherit;transition:all .15s;box-shadow:0 3px 10px rgba(3,70,147,.3)}
+.btn-next:hover{background:var(--blue-m);transform:translateY(-1px);box-shadow:0 5px 16px rgba(3,70,147,.35)}
+.btn-gen{background:var(--green)!important;box-shadow:0 3px 10px rgba(0,147,69,.3)!important}
+.btn-gen:hover{background:#007a3a!important}
+
+/* loading */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px;gap:18px;padding:40px}
+.spin{font-size:44px;animation:spin 1.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading h2{font-size:15px;font-weight:800;color:var(--blue)}
+.loading p{font-size:13px;color:var(--slate);text-align:center;line-height:1.65;max-width:320px}
+.prog-anim-bg{width:240px;height:5px;background:#E2E8F0;border-radius:10px;overflow:hidden}
+.prog-anim-fill{height:5px;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:10px;animation:slide 1.9s ease-in-out infinite;width:60%}
+@keyframes slide{0%{transform:translateX(-110%)}100%{transform:translateX(280%)}}
+.loading-steps{display:flex;flex-direction:column;gap:6px;width:260px}
+.lstep{font-size:12px;color:var(--slate);display:flex;align-items:center;gap:8px;padding:5px 0;transition:color .3s}
+.lstep.active{color:var(--blue);font-weight:700}
+.lstep.done{color:var(--green);font-weight:600}
+
+/* result */
+.result-bar{display:flex;justify-content:space-between;align-items:center;padding:15px 22px;background:linear-gradient(135deg,var(--blue-d),var(--blue));flex-wrap:wrap;gap:10px}
+.result-bar-title{font-size:14px;font-weight:800;color:#fff}
+.result-btns{display:flex;gap:8px;flex-wrap:wrap}
+.rbtn{border:none;border-radius:9px;padding:8px 15px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:6px}
+.rbtn-html{background:#fff;color:var(--blue)}
+.rbtn-html:hover{background:#EFF6FF;transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.rbtn-pdf{background:#009345;color:#fff}
+.rbtn-pdf:hover{background:#007a3a;transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,147,69,.3)}
+.rbtn-new{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25)}
+.rbtn-new:hover{background:rgba(255,255,255,.22)}
+
+/* preview frame */
+.preview-wrapper{background:#94A3B8;padding:8px;min-height:700px}
+#result-frame{width:100%;min-height:700px;border:none;border-radius:4px;background:#fff;display:block}
+
+/* result success screen */
+.result-success{
+  padding:40px 28px 44px;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  text-align:center;
+}
+.rs-icon{font-size:52px;animation:pop .4s cubic-bezier(.4,0,.2,1)}
+@keyframes pop{0%{transform:scale(.5);opacity:0}80%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.rs-title{font-size:20px;font-weight:800;color:var(--text)}
+.rs-sub{font-size:13.5px;color:var(--slate);max-width:380px;line-height:1.6}
+.rs-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:460px;margin-top:8px}
+.rs-btn{display:flex;align-items:center;gap:14px;padding:14px 20px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;text-align:left;transition:all .15s;width:100%}
+.rs-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.rs-btn-primary{background:var(--blue);color:#fff}
+.rs-btn-secondary{background:var(--blue-l);color:var(--blue);border:1.5px solid #BFDBFE}
+.rs-btn-green{background:var(--green-l);color:var(--green);border:1.5px solid #BBF7D0}
+.rs-btn-icon{font-size:26px;flex-shrink:0}
+.rs-btn-label{font-size:14px;font-weight:700}
+.rs-btn-desc{font-size:11.5px;opacity:.75;margin-top:2px}
+/* steps */
+.rs-steps{display:flex;flex-direction:column;width:100%;max-width:460px;margin-top:4px;gap:0}
+.rs-step{display:flex;align-items:flex-start;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;text-align:left}
+.rs-step-num{min-width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;margin-top:1px}
+.rs-step-body{}
+.rs-step-label{font-size:13.5px;font-weight:700;color:var(--text)}
+.rs-step-desc{font-size:12px;color:var(--slate);margin-top:3px;line-height:1.55}
+.rs-step-desc code{font-family:'JetBrains Mono',monospace;font-size:11.5px;background:#F1F5F9;color:var(--blue);padding:1px 5px;border-radius:4px}
+.rs-step-arrow{font-size:18px;color:#CBD5E1;text-align:center;padding:4px 0;align-self:center}
+.rs-btn-download, a.rs-btn-download{display:block;text-align:center;text-decoration:none;margin-top:8px;width:100%;max-width:460px;padding:15px 24px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;transition:all .15s;box-shadow:0 4px 14px rgba(0,147,69,.3)}
+.rs-btn-download:hover, a.rs-btn-download:hover{background:#007a3a;transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,147,69,.4)}
+.rs-meta{font-size:11px;color:#94A3B8;background:#F8FAFB;border:1px solid var(--border);border-radius:8px;padding:8px 14px;width:100%;max-width:460px;line-height:1.7;text-align:left}
+
+/* format recommendation panel */
+.fmt-rec{
+  width:100%;max-width:460px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-top:4px;
+}
+.fmt-rec-header{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  background:linear-gradient(135deg,#F8FBFF,#F0FDF4);
+  border-bottom:1px solid var(--border);
+}
+.fmt-rec-icon{font-size:24px}
+.fmt-rec-title{font-size:13.5px;font-weight:800;color:var(--text)}
+.fmt-rec-sub{font-size:11px;color:var(--slate);margin-top:2px}
+.fmt-rec-loading{margin-left:auto;font-size:12px;color:var(--slate);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.fmt-spin{animation:spin 1.2s linear infinite;display:inline-block}
+.fmt-body{padding:16px}
+.fmt-cards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.fmt-card{
+  border-radius:10px;padding:10px 14px;
+  display:flex;align-items:center;gap:10px;
+  flex:1;min-width:130px;
+  border:2px solid transparent;
+}
+.fmt-card.recommended{
+  border-color:var(--green);
+  background:var(--green-l);
+  box-shadow:0 2px 10px rgba(0,147,69,.15);
+}
+.fmt-card.secondary{background:#F8FAFB;border-color:var(--border)}
+.fmt-card.avoid{background:#FFF1F2;border-color:#FECDD3;opacity:.75}
+.fmt-card-emoji{font-size:22px;flex-shrink:0}
+.fmt-card-info{}
+.fmt-card-name{font-size:12.5px;font-weight:700;color:var(--text)}
+.fmt-card-tag{font-size:10px;font-weight:700;border-radius:4px;padding:1px 6px;margin-top:3px;display:inline-block}
+.tag-best{background:var(--green);color:#fff}
+.tag-good{background:var(--blue-l);color:var(--blue)}
+.tag-avoid{background:#FECDD3;color:#BE123C}
+.fmt-tool-badge{font-size:10px;color:#6366F1;background:#EEF2FF;border-radius:4px;padding:2px 6px;margin-top:4px;display:inline-block;font-weight:600}
+.fmt-reasoning{
+  background:#F8FAFB;border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+  font-size:12.5px;color:#374151;line-height:1.65;
+}
+.fmt-reasoning strong{color:var(--blue)}
+
+/* error */
+.err{margin:0 28px 14px;padding:12px 14px;background:#FEE2E2;border-radius:10px;font-size:13px;color:#991B1B;border:1px solid #FECACA}
+
+/* toast */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--green);color:#fff;padding:13px 20px;border-radius:12px;font-size:13px;font-weight:700;box-shadow:0 6px 20px rgba(0,147,69,.35);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:9999;pointer-events:none;display:flex;align-items:center;gap:8px}
+.toast.show{transform:translateY(0);opacity:1}
+
+.hidden{display:none!important}
+
+/* charts ai pill */
+.pill-ai{
+  background:linear-gradient(135deg,#034693,#1D6BD4)!important;
+  color:#fff!important;border-color:transparent!important;
+  font-weight:700!important;
+}
+.pill-ai.on{
+  background:linear-gradient(135deg,#022f62,#034693)!important;
+  border-color:transparent!important;color:#fff!important;
+  box-shadow:0 3px 12px rgba(3,70,147,.35)!important;
+}
+.pill-manual.disabled-by-ai{opacity:.35;pointer-events:none}
+.charts-hint{font-size:12px;padding:8px 12px;border-radius:8px;line-height:1.5}
+.charts-hint-ai{background:#EFF6FF;color:#1D6BD4;border:1px solid #BFDBFE}
+.charts-hint-manual{background:#F8FAFC;color:var(--slate);border:1px solid var(--border)}
+
+/* ─── API KEY SCREEN ─── */
+.apikey-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.apikey-hdr{background:linear-gradient(140deg,var(--blue-d) 0%,var(--blue) 55%,#1a5fbb 100%);padding:28px;text-align:center;position:relative;overflow:hidden}
+.apikey-hdr::before{content:'';position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 70%)}
+.apikey-hdr h1{font-size:18px;font-weight:800;color:#fff;margin-bottom:6px}
+.apikey-hdr p{font-size:13px;color:rgba(255,255,255,.65)}
+.apikey-body{padding:28px;display:flex;flex-direction:column;gap:18px}
+.apikey-hint{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:12px 14px;font-size:12.5px;color:#1D4ED8;line-height:1.6}
+.apikey-hint a{color:#1D4ED8;font-weight:700}
+.apikey-input-wrap{display:flex;flex-direction:column;gap:8px}
+.apikey-input-wrap label{font-size:13px;font-weight:700;color:var(--text)}
+.apikey-input-row{display:flex;gap:8px;align-items:center}
+.apikey-input-row input{flex:1;border:1.5px solid #CBD5E1;border-radius:10px;padding:11px 14px;font-size:13px;font-family:'JetBrains Mono',monospace;color:var(--text);background:#fff;transition:border-color .15s,box-shadow .15s}
+.apikey-input-row input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(3,70,147,.1)}
+.apikey-toggle{border:1.5px solid #CBD5E1;border-radius:9px;padding:10px 14px;background:#fff;cursor:pointer;font-size:13px;color:var(--slate);font-family:inherit;white-space:nowrap;transition:all .15s}
+.apikey-toggle:hover{border-color:var(--blue-m);color:var(--blue-m)}
+.apikey-error{background:#FEE2E2;border:1px solid #FECACA;border-radius:9px;padding:10px 14px;font-size:12.5px;color:#991B1B;display:none}
+.apikey-security{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:12px 14px;font-size:12px;color:#166534;line-height:1.6}
+.apikey-submit{border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;color:#fff;cursor:pointer;background:var(--blue);font-family:inherit;transition:all .15s;box-shadow:0 3px 10px rgba(3,70,147,.3);width:100%}
+.apikey-submit:hover{background:var(--blue-m);transform:translateY(-1px)}
+.apikey-footer{padding:14px 28px;border-top:1px solid var(--border);background:#F8FAFB;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--slate)}
+.apikey-footer a{color:var(--blue);font-weight:600;text-decoration:none}
+.apikey-footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+
+<!-- ═══ API KEY SCREEN ═══ -->
+<div class="apikey-card" id="apikeyCard">
+  <div class="apikey-hdr">
+    <h1>🔑 Qlik Cloud Report Designer</h1>
+    <p>Ingresa tu API Key de Anthropic para comenzar</p>
+  </div>
+  <div class="apikey-body">
+    <div class="apikey-hint">
+      💡 <strong>¿No tienes API Key?</strong> Créala gratis en
+      <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>
+      → <strong>API Keys</strong> → <strong>Create Key</strong>.<br>
+      El plan de pago más básico (desde $5 USD) es suficiente para usar este formulario.
+    </div>
+    <div class="apikey-input-wrap">
+      <label for="apikeyInput">Tu API Key de Anthropic</label>
+      <div class="apikey-input-row">
+        <input type="password" id="apikeyInput" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false">
+        <button class="apikey-toggle" onclick="toggleApiKeyVisibility()" id="apikeyToggleBtn">👁 Ver</button>
+      </div>
+    </div>
+    <div class="apikey-error" id="apikeyError">⚠️ La API Key no es válida. Debe comenzar con <strong>sk-ant-</strong> y tener al menos 40 caracteres.</div>
+    <div class="apikey-security">
+      🔒 <strong>Tu key es privada y segura:</strong> se guarda únicamente en la memoria del navegador durante esta sesión. No se envía a ningún servidor externo — solo va directamente a <strong>api.anthropic.com</strong> cuando generas el prototipo.
+    </div>
+    <button class="apikey-submit" onclick="submitApiKey()">Ingresar y abrir el formulario →</button>
+  </div>
+  <div class="apikey-footer">
+    <span>🌐 Qlik Cloud Report Designer · v3.0</span>
+    <a href="https://console.anthropic.com/settings/keys" target="_blank">Obtener API Key →</a>
+  </div>
+</div>
+
+<div class="top-badge" id="topBadge" style="display:none">
+  <span class="brand-pill">Qlik Cloud</span>
+  <span class="ver">Diseñador de Informes · v3.0</span>
+</div>
+
+<!-- ═══ FORM CARD ═══ -->
+<div class="card hidden" id="formCard">
+  <div class="hdr">
+    <h1>📋 Diseñador de Informes Qlik Cloud</h1>
+    <p>Completa los 5 pasos · La IA genera un prototipo visual real · Descarga en HTML o PDF</p>
+  </div>
+  <div class="prog-track"><div class="prog-fill" id="prog" style="width:20%"></div></div>
+  <div class="stepinfo">
+    <div class="dots">
+      <div class="dot active" id="d0"></div><div class="dot" id="d1"></div>
+      <div class="dot" id="d2"></div><div class="dot" id="d3"></div><div class="dot" id="d4"></div>
+    </div>
+    <span class="steplbl" id="slbl">Paso 1 de 5 — Contexto</span>
+  </div>
+
+  <!-- PASO 1 -->
+  <div class="body" id="s0">
+    <div class="sectitle"><span class="snum">1</span>Contexto del informe</div>
+    <div class="hint-box">💡 Esta información aparecerá en el encabezado del prototipo generado.</div>
+    <div class="group">
+      <label class="qlabel">Nombre o título del informe</label>
+      <input type="text" id="f_nombre" placeholder="Ej: Dashboard de Ventas Mensual">
+    </div>
+    <div class="group">
+      <label class="qlabel">Área de negocio</label>
+      <div class="pills" data-key="area" data-multi="0">
+        <div class="pill" data-v="Ventas">Ventas</div>
+        <div class="pill" data-v="Finanzas">Finanzas</div>
+        <div class="pill" data-v="Operaciones">Operaciones</div>
+        <div class="pill" data-v="Marketing">Marketing</div>
+        <div class="pill" data-v="RR.HH.">RR.HH.</div>
+        <div class="pill" data-v="TI">TI</div>
+        <div class="pill" data-v="Logística">Logística</div>
+        <div class="pill ot-trigger" data-v="Otro" data-ot="area_otro">Otro...</div>
+      </div>
+      <input type="text" id="area_otro" class="hidden" placeholder="Especifica el área">
+    </div>
+    <div class="group">
+      <label class="qlabel">Objetivo principal del informe</label>
+      <textarea id="f_objetivo" placeholder="Ej: Monitorear el cumplimiento de metas de ventas por región y detectar desviaciones a tiempo..."></textarea>
+    </div>
+    <div class="group">
+      <label class="qlabel">Logo de la empresa <span class="opt">(opcional — aparecerá en el prototipo)</span></label>
+      <div class="logo-box" id="logoBox" onclick="document.getElementById('logoInput').click()">
+        <div class="logo-ph" id="logoPlaceholder">🏢</div>
+        <div>
+          <div class="logo-lt" id="logoTxt">Clic para subir el logo</div>
+          <div class="logo-ls">PNG, JPG o SVG · Máx. 2 MB</div>
+        </div>
+      </div>
+      <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="handleLogo(this)">
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="body hidden" id="s1">
+    <div class="sectitle"><span class="snum">2</span>Perfil del usuario final</div>
+    <div class="hint-box">👥 Determina el nivel de detalle, densidad y complejidad del prototipo.</div>
+    <div class="group">
+      <label class="qlabel">¿Quién consumirá el informe?</label>
+      <div class="cards-wrap" data-key="usertype" data-multi="0">
+        <div class="pcard" data-v="Ejecutivo / Alta dirección"><div class="icon">💼</div><div><div class="ct">Ejecutivo</div><div class="cs">Alta dirección / C-Level</div></div></div>
+        <div class="pcard" data-v="Analista de datos"><div class="icon">📊</div><div><div class="ct">Analista</div><div class="cs">Exploración profunda</div></div></div>
+        <div class="pcard" data-v="Usuario operativo"><div class="icon">🔧</div><div><div class="ct">Operativo</div><div class="cs">Tareas del día a día</div></div></div>
+        <div class="pcard" data-v="Gerente de área"><div class="icon">👥</div><div><div class="ct">Gerente</div><div class="cs">Jefatura de área</div></div></div>
+        <div class="pcard" data-v="Cliente externo"><div class="icon">🤝</div><div><div class="ct">Cliente</div><div class="cs">Externo / partner</div></div></div>
+      </div>
+    </div>
+    <div class="group">
+      <label class="qlabel">Frecuencia de consulta</label>
+      <div class="pills" data-key="freq" data-multi="0">
+        <div class="pill" data-v="Diaria">Diaria</div><div class="pill" data-v="Semanal">Semanal</div>
+        <div class="pill" data-v="Mensual">Mensual</div><div class="pill" data-v="Trimestral">Trimestral</div>
+        <div class="pill" data-v="Bajo demanda">Bajo demanda</div>
+      </div>
+    </div>
+    <div class="group">
+      <label class="qlabel">Nivel de familiaridad con datos</label>
+      <div class="pills" data-key="nivel" data-multi="0">
+        <div class="pill" data-v="Básico">🟢 Básico</div>
+        <div class="pill" data-v="Intermedio">🟡 Intermedio</div>
+        <div class="pill" data-v="Avanzado">🔴 Avanzado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="body hidden" id="s2">
+    <div class="sectitle"><span class="snum">3</span>KPIs y métricas</div>
+    <div class="hint-box">📈 Cada KPI se convertirá en una tarjeta visual con valor de ejemplo en el prototipo.</div>
+    <div class="group">
+      <label class="qlabel">KPIs o métricas principales</label>
+      <textarea id="f_kpis" placeholder="Ej: Total ventas ($), % Cumplimiento meta, Unidades vendidas, Ticket promedio, NPS..."></textarea>
+    </div>
+    <div class="group">
+      <label class="qlabel">Dimensiones de análisis <span class="multi-badge">varias</span></label>
+      <div class="pills" data-key="dims" data-multi="1">
+        <div class="pill" data-v="Tiempo">Tiempo</div><div class="pill" data-v="Región / País">Región / País</div>
+        <div class="pill" data-v="Producto">Producto</div><div class="pill" data-v="Vendedor">Vendedor</div>
+        <div class="pill" data-v="Canal">Canal</div><div class="pill" data-v="Cliente">Cliente</div>
+        <div class="pill" data-v="Centro de costo">Centro de costo</div>
+        <div class="pill ot-trigger" data-v="Otro" data-ot="dims_otro">Otro...</div>
+      </div>
+      <input type="text" id="dims_otro" class="hidden" placeholder="¿Qué otra dimensión?">
+    </div>
+    <div class="group">
+      <label class="qlabel">Tipo de análisis <span class="multi-badge">varios</span></label>
+      <div class="pills" data-key="anal" data-multi="1">
+        <div class="pill" data-v="Comparativo">Comparativo</div><div class="pill" data-v="Tendencia">Tendencia</div>
+        <div class="pill" data-v="Ranking / Top N">Ranking / Top N</div><div class="pill" data-v="Distribución">Distribución</div>
+        <div class="pill" data-v="Varianza vs meta">Varianza vs meta</div><div class="pill" data-v="Drill-down">Drill-down</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 4 -->
+  <div class="body hidden" id="s3">
+    <div class="sectitle"><span class="snum">4</span>Diseño visual</div>
+    <div class="hint-box">🎨 Define los colores y el estilo del prototipo — se aplicarán en toda la plantilla generada.</div>
+    <div class="group">
+      <label class="qlabel">Visualizaciones a incluir <span class="multi-badge">varias</span></label>
+      <div class="pills" id="chartsPills" data-key="charts" data-multi="1">
+        <div class="pill pill-ai on" id="pill-ai-charts" data-v="IA_PROPONE">✨ IA propone los mejores gráficos</div>
+        <div class="pill pill-manual" data-v="Barras">Barras</div>
+        <div class="pill pill-manual" data-v="Líneas">Líneas</div>
+        <div class="pill pill-manual" data-v="Torta / Donut">Torta / Donut</div>
+        <div class="pill pill-manual" data-v="KPI Cards">KPI Cards</div>
+        <div class="pill pill-manual" data-v="Tablas">Tablas</div>
+        <div class="pill pill-manual" data-v="Gauge">Gauge</div>
+        <div class="pill pill-manual" data-v="Barras horizontales">Barras horiz.</div>
+        <div class="pill pill-manual" data-v="Área">Área</div>
+        <div class="pill pill-manual" data-v="Scatter">Scatter</div>
+      </div>
+      <div id="charts-ai-hint" class="charts-hint charts-hint-ai">
+        ✨ La IA analizará tus KPIs, dimensiones y tipo de análisis para seleccionar y justificar las visualizaciones más adecuadas.
+      </div>
+      <div id="charts-manual-hint" class="charts-hint charts-hint-manual hidden">
+        Selecciona una o más visualizaciones. Puedes combinarlas libremente.
+      </div>
+    </div>
+    <div class="group">
+      <label class="qlabel">Paleta de colores / branding</label>
+      <div class="pills" data-key="colores" data-multi="0">
+        <div class="pill ot-trigger" data-v="Corporativo" data-ot="colores_detalle">🎨 Especificar colores...</div>
+        <div class="pill" data-v="Qlik estándar (azul/verde)">Qlik estándar</div>
+        <div class="pill" data-v="Dark / Oscuro">Dark / Oscuro</div>
+        <div class="pill" data-v="Minimalista (blanco/gris)">Minimalista</div>
+      </div>
+      <input type="text" id="colores_detalle" class="hidden" placeholder="Ej: Primario #003087 · Secundario #F59E0B · Texto #1E293B">
+    </div>
+    <div class="group">
+      <label class="qlabel">Estilo del prototipo</label>
+      <div class="pills" data-key="estilo" data-multi="0">
+        <div class="pill" data-v="Ejecutivo (KPIs grandes, limpio)">Ejecutivo</div>
+        <div class="pill" data-v="Analítico (denso, más gráficas)">Analítico</div>
+        <div class="pill" data-v="Operativo (tablas y alertas)">Operativo</div>
+        <div class="pill" data-v="Moderno (dark, gradientes)">Moderno</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 5 -->
+  <div class="body hidden" id="s4">
+    <div class="sectitle"><span class="snum">5</span>Filtros y configuración final</div>
+    <div class="hint-box">⚙️ Último paso — se incluirán en el prototipo como panel de filtros visual.</div>
+    <div class="group">
+      <label class="qlabel">Filtros del informe <span class="multi-badge">varios</span></label>
+      <div class="pills" data-key="filtros" data-multi="1">
+        <div class="pill" data-v="Rango de fechas">Rango de fechas</div><div class="pill" data-v="Región">Región</div>
+        <div class="pill" data-v="Producto">Producto</div><div class="pill" data-v="Vendedor">Vendedor</div>
+        <div class="pill" data-v="Estado">Estado</div><div class="pill" data-v="Categoría">Categoría</div>
+        <div class="pill" data-v="Sin filtros">Sin filtros</div>
+      </div>
+    </div>
+    <div class="group">
+      <label class="qlabel">Periodicidad de actualización de datos</label>
+      <div class="pills" data-key="period" data-multi="0">
+        <div class="pill" data-v="Tiempo real">Tiempo real</div><div class="pill" data-v="Diaria">Diaria</div>
+        <div class="pill" data-v="Semanal">Semanal</div><div class="pill" data-v="Mensual">Mensual</div>
+      </div>
+    </div>
+    <div class="group">
+      <label class="qlabel">Consideraciones adicionales <span class="opt">(opcional)</span></label>
+      <textarea id="f_extra" placeholder="Ej: soporte móvil, versión en inglés, alertas semáforo, confidencialidad..."></textarea>
+    </div>
+  </div>
+
+  <div id="errBox" class="err hidden"></div>
+  <div class="footer">
+    <button class="btn-back" id="btnBack" onclick="nav(-1)" disabled>← Atrás</button>
+    <button class="btn-next" id="btnNext" onclick="nav(1)">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ═══ LOADING ═══ -->
+<div class="card hidden" id="loadCard">
+  <div class="loading">
+    <div class="spin">⚙️</div>
+    <h2>Generando prototipo con IA...</h2>
+    <p>Estamos construyendo el dashboard visual<br>con todos tus datos, un momento...</p>
+    <div class="prog-anim-bg"><div class="prog-anim-fill"></div></div>
+    <div class="loading-steps">
+      <div class="lstep" id="ls0">📐 Definiendo estructura del informe...</div>
+      <div class="lstep" id="ls1">📊 Generando gráficas y KPI cards...</div>
+      <div class="lstep" id="ls2">🎨 Aplicando paleta de colores...</div>
+      <div class="lstep" id="ls3">✅ Finalizando prototipo visual...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RESULTADO ═══ -->
+<div class="card hidden" id="resultCard">
+  <div class="result-bar">
+    <span class="result-bar-title" id="resultTitle">✅ Prototipo generado</span>
+    <div class="result-btns">
+      <button class="rbtn rbtn-new" onclick="reset()">← Nuevo informe</button>
+    </div>
+  </div>
+  <div class="result-success">
+    <div class="rs-icon">🎉</div>
+    <h2 class="rs-title" id="rs-nombre">Tu prototipo está listo</h2>
+    <p class="rs-sub">Descarga el archivo HTML y ábrelo en tu navegador para verlo completo.</p>
+
+    <!-- PASO A PASO -->
+    <div class="rs-steps">
+      <div class="rs-step">
+        <div class="rs-step-num">1</div>
+        <div class="rs-step-body">
+          <div class="rs-step-label">Descarga el archivo</div>
+          <div class="rs-step-desc">Haz clic en el botón de abajo — se guardará en tu carpeta de descargas</div>
+        </div>
+      </div>
+      <div class="rs-step-arrow">↓</div>
+      <div class="rs-step">
+        <div class="rs-step-num">2</div>
+        <div class="rs-step-body">
+          <div class="rs-step-label">Abre el archivo descargado</div>
+          <div class="rs-step-desc">Ve a tu carpeta de Descargas, haz doble clic en el archivo <code>.html</code> — se abrirá en Chrome</div>
+        </div>
+      </div>
+      <div class="rs-step-arrow">↓</div>
+      <div class="rs-step">
+        <div class="rs-step-num">3</div>
+        <div class="rs-step-body">
+          <div class="rs-step-label">Guarda como PDF (opcional)</div>
+          <div class="rs-step-desc">Dentro del archivo abierto, presiona <code>Ctrl + P</code> → "Guardar como PDF"</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="download-area" style="width:100%;max-width:460px;margin-top:8px">
+      <p style="font-size:12px;color:#94A3B8;text-align:center;margin-bottom:8px">
+        El botón aparecerá aquí cuando el prototipo esté listo
+      </p>
+    </div>
+
+    <!-- RECOMENDACIÓN DE FORMATO -->
+    <div class="fmt-rec hidden" id="fmtRec">
+      <div class="fmt-rec-header">
+        <span class="fmt-rec-icon">🤖</span>
+        <div>
+          <div class="fmt-rec-title">Recomendación de formato</div>
+          <div class="fmt-rec-sub">Basada en tu informe, usuario y objetivo</div>
+        </div>
+        <div class="fmt-rec-loading" id="fmtLoading">
+          <span class="fmt-spin">⏳</span> Analizando...
+        </div>
+      </div>
+      <div id="fmtBody" class="fmt-body hidden">
+        <div class="fmt-cards" id="fmtCards"></div>
+        <div class="fmt-reasoning" id="fmtReasoning"></div>
+      </div>
+    </div>
+
+    <div class="rs-meta" id="rs-meta"></div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── API KEY ─── */
+// 🔑 OPCIÓN A: Pega aquí tu API Key de Anthropic
+// Obtenerla en: https://console.anthropic.com/settings/keys
+var API_KEY = ''; // Set by user on the API Key screen
+
+
+/* ─── API KEY SCREEN ─── */
+function toggleApiKeyVisibility(){
+  var inp = document.getElementById('apikeyInput');
+  var btn = document.getElementById('apikeyToggleBtn');
+  if(inp.type === 'password'){ inp.type = 'text'; btn.textContent = '🙈 Ocultar'; }
+  else { inp.type = 'password'; btn.textContent = '👁 Ver'; }
+}
+
+function submitApiKey(){
+  var val = document.getElementById('apikeyInput').value.trim();
+  var err = document.getElementById('apikeyError');
+  if(!val.startsWith('sk-ant-') || val.length < 40){
+    err.style.display = 'block';
+    document.getElementById('apikeyInput').style.borderColor = '#EF4444';
+    return;
+  }
+  err.style.display = 'none';
+  API_KEY = val;
+  // Show the main form
+  document.getElementById('apikeyCard').classList.add('hidden');
+  document.getElementById('topBadge').style.display = 'flex';
+  document.getElementById('formCard').classList.remove('hidden');
+  // Also show other cards that depend on form flow
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Allow Enter key to submit
+document.addEventListener('DOMContentLoaded', function(){
+  var inp = document.getElementById('apikeyInput');
+  if(inp) inp.addEventListener('keydown', function(e){ if(e.key === 'Enter') submitApiKey(); });
+});
+
+/* ─── STATE ─── */
+var step = 0, logoDataUrl = null, generatedHTML = '';
+
+var LABELS = [
+  'Paso 1 de 5 — Contexto','Paso 2 de 5 — Usuario final',
+  'Paso 3 de 5 — KPIs y métricas','Paso 4 de 5 — Diseño visual',
+  'Paso 5 de 5 — Filtros y extras'
+];
+
+/* ─── INTERACTIONS ─── */
+document.querySelectorAll('[data-key]').forEach(function(c){
+  var multi = c.dataset.multi === '1';
+  c.querySelectorAll('.pill,.pcard,.ptile').forEach(function(el){
+    el.addEventListener('click', function(){
+      // Special AI-propose pill logic
+      if(el.id === 'pill-ai-charts'){
+        var turningOn = !el.classList.contains('on');
+        el.classList.toggle('on');
+        // disable/enable manual pills
+        c.querySelectorAll('.pill-manual').forEach(function(m){
+          m.classList.toggle('disabled-by-ai', turningOn);
+          if(turningOn) m.classList.remove('on');
+        });
+        document.getElementById('charts-ai-hint').classList.toggle('hidden', !turningOn);
+        document.getElementById('charts-manual-hint').classList.toggle('hidden', turningOn);
+        return;
+      }
+      // If clicking a manual pill while AI is on, ignore
+      if(el.classList.contains('pill-manual') && el.classList.contains('disabled-by-ai')) return;
+
+      if(!multi) c.querySelectorAll('.pill,.pcard,.ptile').forEach(function(x){ x.classList.remove('on'); });
+      el.classList.toggle('on');
+      if(el.classList.contains('ot-trigger')){
+        var t = document.getElementById(el.dataset.ot);
+        if(t) t.classList.toggle('hidden', !el.classList.contains('on'));
+      }
+    });
+  });
+});
+
+function handleLogo(input){
+  var f = input.files[0]; if(!f) return;
+  if(f.size > 2097152){ alert('Máximo 2 MB'); return; }
+  var r = new FileReader();
+  r.onload = function(e){
+    logoDataUrl = e.target.result;
+    document.getElementById('logoPlaceholder').innerHTML =
+      '<img src="'+logoDataUrl+'" style="width:54px;height:54px;object-fit:contain;border-radius:8px">';
+    document.getElementById('logoTxt').textContent = 'Logo cargado ✓ — clic para cambiar';
+  };
+  r.readAsDataURL(f);
+}
+
+function getVal(key){
+  var c = document.querySelector('[data-key="'+key+'"]'); if(!c) return '-';
+  var sel = [];
+  c.querySelectorAll('.on').forEach(function(el){
+    if(el.classList.contains('ot-trigger')){
+      var t = document.getElementById(el.dataset.ot);
+      sel.push(t && t.value.trim() ? t.value.trim() : el.dataset.v);
+    } else sel.push(el.dataset.v);
+  });
+  return sel.length ? sel.join(', ') : '-';
+}
+function getTxt(id){ var e = document.getElementById(id); return e && e.value.trim() ? e.value.trim() : '-'; }
+
+/* ─── NAV ─── */
+function showStep(n){
+  for(var i = 0; i < 5; i++){
+    document.getElementById('s'+i).classList.toggle('hidden', i !== n);
+    var d = document.getElementById('d'+i);
+    d.className = 'dot'+(i===n?' active':i<n?' done':'');
+  }
+  document.getElementById('slbl').textContent = LABELS[n];
+  document.getElementById('prog').style.width = ((n+1)/5*100)+'%';
+  document.getElementById('btnBack').disabled = n === 0;
+  var nb = document.getElementById('btnNext');
+  nb.textContent = n === 4 ? '⚡ Generar prototipo' : 'Siguiente →';
+  nb.className = 'btn-next'+(n===4?' btn-gen':'');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function nav(dir){
+  if(dir===1 && step===4){ generate(); return; }
+  step += dir; if(step<0)step=0; if(step>4)step=4;
+  showStep(step);
+}
+
+/* ─── PROMPT ─── */
+function buildPrompt(){
+  var nombre   = getTxt('f_nombre');
+  var area     = getVal('area');
+  var objetivo = getTxt('f_objetivo');
+  var usertype = getVal('usertype');
+  var freq     = getVal('freq');
+  var nivel    = getVal('nivel');
+  var kpis     = getTxt('f_kpis');
+  var dims     = getVal('dims');
+  var anal     = getVal('anal');
+  var charts   = getVal('charts');
+  var aiProposeCharts = document.getElementById('pill-ai-charts') && document.getElementById('pill-ai-charts').classList.contains('on');
+  var colores  = getVal('colores');
+  var colorDet = getTxt('colores_detalle');
+  var estilo   = getVal('estilo');
+  var filtros  = getVal('filtros');
+  var period   = getVal('period');
+  var extra    = getTxt('f_extra');
+
+  var colorInfo = colores + (colorDet !== '-' ? ' — '+colorDet : '');
+
+  // Use a text placeholder in the prompt — we'll inject the real logo AFTER the AI responds
+  var logoPlaceholder = '[[LOGO_EMPRESA]]';
+
+  return `Eres un experto diseñador de dashboards y analista de datos. Tu tarea es generar un PROTOTIPO VISUAL COMPLETO de un informe empresarial, directamente en HTML con CSS embebido.
+
+IMPORTANTE: El resultado debe ser un dashboard VISUALMENTE IMPRESIONANTE con datos de ejemplo realistas. No texto plano, no explicaciones — solo el HTML del prototipo completo.
+
+DATOS DEL INFORME:
+- Nombre: ${nombre}
+- Área: ${area}
+- Objetivo: ${objetivo}
+- Usuario final: ${usertype}
+- Frecuencia: ${freq}
+- Nivel técnico usuario: ${nivel}
+- KPIs / Métricas: ${kpis}
+- Dimensiones: ${dims}
+- Tipos de análisis: ${anal}
+- Visualizaciones: ${aiProposeCharts ? 'LA IA DEBE PROPONER Y JUSTIFICAR los gráficos más adecuados según los KPIs, dimensiones y tipo de análisis indicados' : charts}
+- Colores / Branding: ${colorInfo}
+- Estilo: ${estilo}
+- Filtros: ${filtros}
+- Periodicidad actualización: ${period}
+- Adicional: ${extra}
+
+INSTRUCCIONES DE DISEÑO — CUMPLIMIENTO OBLIGATORIO:
+
+1. USA ÚNICAMENTE HTML + CSS + SVG embebidos (sin librerías externas).
+
+2. ENCABEZADO: Franja con logo: ${logoPlaceholder}, título "${nombre}", área "${area}", fecha actual y badge "${period}".
+
+3. PANEL DE FILTROS: Chips/botones para: ${filtros}. Estilo visual interactivo real.
+
+4. ═══ SECCIÓN KPI CARDS (OBLIGATORIO) ═══
+   Los KPIs indicados son: "${kpis}"
+   → Separa cada KPI por coma o salto de línea.
+   → Crea UNA tarjeta INDEPENDIENTE por CADA KPI encontrado. Si hay 6 KPIs, deben haber 6 tarjetas. Si hay 10, deben haber 10.
+   → NUNCA agrupes varios KPIs en una sola tarjeta.
+   → Cada tarjeta: nombre del KPI, valor grande (ej: 84,620), unidad, flecha tendencia ↑↓→, % variación vs período anterior, mini sparkline SVG de 8 puntos, color semáforo de fondo (verde=#DCFCE7 / amarillo=#FEF9C3 / rojo=#FEE2E2).
+   → Disposición: grid responsivo de 3-4 columnas.
+
+5. ═══ SECCIONES POR DIMENSIÓN (OBLIGATORIO) ═══
+   Las dimensiones son: "${dims}"
+   → Por CADA dimensión encontrada, crea una SECCIÓN COMPLETA con:
+     a) Título de sección: "Análisis por [dimensión]"
+     b) UNA gráfica SVG principal que muestre TODOS los KPIs desagregados por esa dimensión con datos de ejemplo realistas (8 categorías mínimo si es tiempo, 5-6 si es región/producto/etc.)
+     c) Una tabla resumen debajo de la gráfica con los valores por categoría de esa dimensión y columna semáforo
+   → NUNCA omitas una dimensión. Si hay 4 dimensiones, deben haber 4 secciones completas.
+
+6. ═══ GRÁFICAS SVG — REGLAS ESTRICTAS ═══
+   ${aiProposeCharts
+     ? 'Selecciona el tipo de gráfica MÁS ADECUADO para cada dimensión según el análisis "'+anal+'". Justifica en un caption bajo el título. Usa tipos variados: barras agrupadas, líneas de tendencia, donut, barras horizontales, heatmap, scatter.'
+     : 'Usa estos tipos de gráfica: '+charts+'. Varía el tipo por dimensión si es posible.'}
+   → Cada SVG: mínimo 700px de ancho, 320px de alto.
+   → Incluir: título, subtítulo/caption, eje X con etiquetas, eje Y con escala, líneas guía, leyenda de colores, valores sobre las barras/puntos.
+   → Datos de ejemplo coherentes con el área "${area}" y el objetivo: "${objetivo}".
+   → NUNCA uses un SVG vacío o un rectángulo placeholder.
+
+7. TABLA GENERAL: Al final, tabla con TODAS las dimensiones como columnas + todos los KPIs. 10-12 filas. Filas alternas. Semáforo en última columna.
+
+8. PALETA: "${colorInfo}". Qlik estándar→ #034693 azul / #009345 verde. Dark→ fondo #0F172A, acentos cyan. Minimalista→ blancos y grises.
+
+9. ESTILO "${estilo}":
+   - Ejecutivo → KPIs font-size:2.8rem+, secciones espaciadas, tipografía limpia.
+   - Analítico → Compacto, gráficas densas, tipografía pequeña, más información.
+   - Operativo → Semáforos grandes, alertas de color, tablas con acciones.
+   - Moderno → Fondo oscuro, gradientes, glow, tipografía bold pesada.
+
+10. FOOTER: "Generado con Qlik Cloud Designer · ${nombre} · Prototipo con datos de ejemplo".
+
+IMPORTANTE: max_tokens es 8000 — optimiza el SVG para ser conciso pero completo. Prioriza que todas las dimensiones y todos los KPIs aparezcan antes que el detalle estético.
+
+Devuelve ÚNICAMENTE el HTML completo (<!DOCTYPE html>.....</html>), sin explicaciones, sin markdown, sin bloques de código.`;
+}
+
+/* ─── LOADING ANIMATION ─── */
+var lsInterval = null;
+function animateLoadingSteps(){
+  var steps = ['ls0','ls1','ls2','ls3'];
+  var i = 0;
+  steps.forEach(function(id){ document.getElementById(id).className='lstep'; });
+  lsInterval = setInterval(function(){
+    if(i > 0) document.getElementById(steps[i-1]).className='lstep done';
+    if(i < steps.length) document.getElementById(steps[i]).className='lstep active';
+    i++;
+    if(i > steps.length) clearInterval(lsInterval);
+  }, 1800);
+}
+
+/* ─── GENERATE ─── */
+async function generate(){
+  document.getElementById('formCard').classList.add('hidden');
+  document.getElementById('loadCard').classList.remove('hidden');
+  document.getElementById('errBox').classList.add('hidden');
+  animateLoadingSteps();
+
+  try{
+    var res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-request-proxy': 'true'
+      },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:16000,
+        messages:[{role:'user', content: buildPrompt()}]
+      })
+    });
+    clearInterval(lsInterval);
+    var json = await res.json();
+    if(json.error){ throw new Error(json.error.message); }
+    var text = (json.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+    // strip markdown fences
+    text = text.replace(/^```html\s*/i,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+    if(!text.startsWith('<')){ throw new Error('La IA no devolvió HTML válido. Intenta de nuevo.'); }
+
+    generatedHTML = text;
+
+    // Inject real logo by replacing placeholder — done AFTER AI responds to avoid token bloat
+    if(logoDataUrl){
+      var logoImg = '<img src="'+logoDataUrl+'" style="height:52px;max-width:160px;object-fit:contain;display:block">';
+      generatedHTML = generatedHTML.replace(/\[\[LOGO_EMPRESA\]\]/g, logoImg);
+    } else {
+      var logoFallback = '<div style="width:48px;height:48px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏢</div>';
+      generatedHTML = generatedHTML.replace(/\[\[LOGO_EMPRESA\]\]/g, logoFallback);
+    }
+
+    var nombre = getTxt('f_nombre').replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s_-]/g,'').replace(/\s+/g,'_') || 'Prototipo_Qlik';
+
+    // UTF-8 safe base64 encode (avoids InvalidCharacterError with special chars)
+    var b64 = btoa(unescape(encodeURIComponent(generatedHTML)));
+    var dataUri = 'data:text/html;charset=utf-8;base64,' + b64;
+
+    var area = document.getElementById('download-area');
+    area.innerHTML = '<a class="rs-btn-download" href="' + dataUri + '" download="' + nombre + '_Prototipo.html">⬇️ Descargar prototipo HTML</a>';
+
+    document.getElementById('loadCard').classList.add('hidden');
+    document.getElementById('resultCard').classList.remove('hidden');
+    document.getElementById('resultTitle').textContent = '✅ Prototipo listo';
+    document.getElementById('rs-nombre').textContent = nombre.replace(/_/g,' ') || 'Tu prototipo está listo';
+    document.getElementById('rs-meta').innerHTML =
+      '📋 <strong>Informe:</strong> '+getTxt('f_nombre')+'&nbsp;&nbsp;|&nbsp;&nbsp;'+
+      '🏢 <strong>Área:</strong> '+getVal('area')+'&nbsp;&nbsp;|&nbsp;&nbsp;'+
+      '👤 <strong>Usuario:</strong> '+getVal('usertype')+'&nbsp;&nbsp;|&nbsp;&nbsp;'+
+      '📅 <strong>Actualización:</strong> '+getVal('period');
+    window.scrollTo({top:0, behavior:'smooth'});
+
+    // Launch format recommendation in parallel (non-blocking)
+    fetchFormatRec();
+
+  } catch(e){
+    clearInterval(lsInterval);
+    document.getElementById('loadCard').classList.add('hidden');
+    document.getElementById('formCard').classList.remove('hidden');
+    var eb = document.getElementById('errBox');
+    eb.textContent = '⚠️ Error: '+e.message;
+    eb.classList.remove('hidden');
+  }
+}
+
+/* ─── FORMAT RECOMMENDATION ─── */
+async function fetchFormatRec(){
+  document.getElementById('fmtRec').classList.remove('hidden');
+  document.getElementById('fmtLoading').style.display = 'flex';
+
+  var d = {
+    nombre:   getTxt('f_nombre'),
+    area:     getVal('area'),
+    objetivo: getTxt('f_objetivo'),
+    usertype: getVal('usertype'),
+    freq:     getVal('freq'),
+    nivel:    getVal('nivel'),
+    kpis:     getTxt('f_kpis'),
+    dims:     getVal('dims'),
+    anal:     getVal('anal'),
+    filtros:  getVal('filtros'),
+    period:   getVal('period'),
+    extra:    getTxt('f_extra')
+  };
+
+  var prompt = `Eres un consultor experto en Qlik NPrinting y Qlik Cloud Reporting.
+Analiza el siguiente informe y recomienda el formato de entrega más adecuado dentro del ecosistema Qlik.
+
+INFORME:
+- Nombre: ${d.nombre}
+- Área: ${d.area}
+- Objetivo: ${d.objetivo}
+- Usuario final: ${d.usertype}
+- Frecuencia de consulta: ${d.freq}
+- Nivel técnico usuario: ${d.nivel}
+- KPIs: ${d.kpis}
+- Dimensiones: ${d.dims}
+- Análisis: ${d.anal}
+- Filtros: ${d.filtros}
+- Actualización de datos: ${d.period}
+- Adicional: ${d.extra}
+
+FORMATOS DISPONIBLES — usa ÚNICAMENTE estos (son los formatos nativos de Qlik NPrinting y Qlik Cloud Reporting):
+1. Excel (NPrinting) — Tablas detalladas, datos descargables, análisis ad-hoc, múltiples hojas con KPIs y dimensiones.
+2. PDF (NPrinting) — Informes formales, distribución masiva, presentaciones ejecutivas, layout fijo.
+3. PowerPoint (NPrinting) — Presentaciones periódicas, reuniones de directivos, slides con gráficas y KPIs.
+4. Word (NPrinting) — Reportes narrativos con texto + gráficas, informes de gestión con explicaciones.
+5. HTML (NPrinting / Qlik Cloud Reporting) — Informes interactivos por email, dashboards embebidos, distribución web interna.
+6. Qlik App (Qlik Cloud) — Dashboard interactivo en la plataforma, exploración libre, drill-down completo, filtros dinámicos.
+7. Pixel Perfect Report (NPrinting) — Informes con layout exacto milimétrico, documentos regulatorios, formatos legales o contables.
+
+Responde ÚNICAMENTE con un objeto JSON con esta estructura exacta (sin markdown, sin explicación):
+{
+  "recomendado": {
+    "formato": "nombre del formato",
+    "herramienta": "Qlik NPrinting / Qlik Cloud Reporting",
+    "emoji": "emoji representativo",
+    "razon": "razón breve en 6-8 palabras"
+  },
+  "alternativos": [
+    { "formato": "nombre", "herramienta": "Qlik NPrinting / Qlik Cloud Reporting", "emoji": "emoji", "razon": "razón breve" },
+    { "formato": "nombre", "herramienta": "Qlik NPrinting / Qlik Cloud Reporting", "emoji": "emoji", "razon": "razón breve" }
+  ],
+  "evitar": [
+    { "formato": "nombre", "emoji": "emoji", "razon": "por qué evitarlo en 5-6 palabras" }
+  ],
+  "justificacion": "Párrafo de 3-4 oraciones explicando la recomendación principal en el contexto de Qlik NPrinting o Qlik Cloud Reporting, mencionando el tipo de usuario, la frecuencia de distribución, y las ventajas técnicas concretas del formato dentro de la plataforma Qlik."
+}`;
+
+  try{
+    var res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-request-proxy': 'true'
+      },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user', content: prompt}]
+      })
+    });
+    var json = await res.json();
+    if(json.error) throw new Error(json.error.message);
+    var raw = (json.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+    raw = raw.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+    var data = JSON.parse(raw);
+    renderFormatRec(data);
+  } catch(e){
+    document.getElementById('fmtLoading').style.display = 'none';
+    document.getElementById('fmtRec').classList.add('hidden');
+  }
+}
+
+function renderFormatRec(data){
+  document.getElementById('fmtLoading').style.display = 'none';
+
+  var cards = '';
+
+  // Recommended
+  cards += '<div class="fmt-card recommended">'
+    + '<span class="fmt-card-emoji">'+data.recomendado.emoji+'</span>'
+    + '<div class="fmt-card-info">'
+    + '<div class="fmt-card-name">'+data.recomendado.formato+'</div>'
+    + '<span class="fmt-card-tag tag-best">⭐ Mejor opción</span>'
+    + (data.recomendado.herramienta ? '<div class="fmt-tool-badge">🔧 '+data.recomendado.herramienta+'</div>' : '')
+    + '<div style="font-size:11px;color:#166534;margin-top:4px">'+data.recomendado.razon+'</div>'
+    + '</div></div>';
+
+  // Alternatives
+  (data.alternativos||[]).forEach(function(alt){
+    cards += '<div class="fmt-card secondary">'
+      + '<span class="fmt-card-emoji">'+alt.emoji+'</span>'
+      + '<div class="fmt-card-info">'
+      + '<div class="fmt-card-name">'+alt.formato+'</div>'
+      + '<span class="fmt-card-tag tag-good">✓ Buena opción</span>'
+      + (alt.herramienta ? '<div class="fmt-tool-badge">🔧 '+alt.herramienta+'</div>' : '')
+      + '<div style="font-size:11px;color:#475569;margin-top:4px">'+alt.razon+'</div>'
+      + '</div></div>';
+  });
+
+  // Avoid
+  (data.evitar||[]).forEach(function(ev){
+    cards += '<div class="fmt-card avoid">'
+      + '<span class="fmt-card-emoji">'+ev.emoji+'</span>'
+      + '<div class="fmt-card-info">'
+      + '<div class="fmt-card-name">'+ev.formato+'</div>'
+      + '<span class="fmt-card-tag tag-avoid">✗ No recomendado</span>'
+      + '<div style="font-size:11px;color:#BE123C;margin-top:4px">'+ev.razon+'</div>'
+      + '</div></div>';
+  });
+
+  document.getElementById('fmtCards').innerHTML = cards;
+  document.getElementById('fmtReasoning').innerHTML = data.justificacion;
+  document.getElementById('fmtBody').classList.remove('hidden');
+}
+
+/* ─── TOAST ─── */
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+
+/* ─── RESET ─── */
+function reset(){
+  step = 0; logoDataUrl = null; generatedHTML = '';
+  document.querySelectorAll('.on').forEach(function(el){ el.classList.remove('on'); });
+  document.querySelectorAll('input[type=text],textarea').forEach(function(el){ el.value=''; });
+  document.querySelectorAll('[data-ot]').forEach(function(el){
+    var t = document.getElementById(el.dataset.ot);
+    if(t) t.classList.add('hidden');
+  });
+  document.getElementById('logoPlaceholder').innerHTML = '🏢';
+  document.getElementById('logoTxt').textContent = 'Clic para subir el logo';
+  document.getElementById('resultCard').classList.add('hidden');
+  document.getElementById('formCard').classList.remove('hidden');
+  document.getElementById('errBox').classList.add('hidden');
+  showStep(0);
+}
+
+showStep(0);
+</script>
+</body>
+</html>
