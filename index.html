@@ -307,7 +307,7 @@ textarea{min-height:82px;resize:vertical}
     </div>
     <div class="apikey-error" id="apikeyError">⚠️ La API Key no es válida. Debe comenzar con <strong>sk-ant-</strong> y tener al menos 40 caracteres.</div>
     <div class="apikey-security">
-      🔒 <strong>Tu key es privada y segura:</strong> se guarda únicamente en la memoria del navegador durante esta sesión. No se envía a ningún servidor externo — solo va directamente a <strong>api.anthropic.com</strong> cuando generas el prototipo.
+      🔒 <strong>Tu key es privada y segura:</strong> se guarda únicamente en la memoria del navegador durante esta sesión. No se envía a ningún servidor externo — viaja a través de un proxy seguro hasta <strong>api.anthropic.com</strong>. Ningún servidor almacena tu key.
     </div>
     <button class="apikey-submit" onclick="submitApiKey()">Ingresar y abrir el formulario →</button>
   </div>
@@ -609,6 +609,8 @@ textarea{min-height:82px;resize:vertical}
 // 🔑 OPCIÓN A: Pega aquí tu API Key de Anthropic
 // Obtenerla en: https://console.anthropic.com/settings/keys
 var API_KEY = ''; // Set by user on the API Key screen
+// 🔧 URL del proxy Cloudflare Worker (ver instrucciones en README)
+var PROXY_URL = 'https://reporting.angelicabarrios.workers.dev';
 
 
 /* ─── API KEY SCREEN ─── */
@@ -848,13 +850,11 @@ async function generate(){
   animateLoadingSteps();
 
   try{
-    var res = await fetch('https://api.anthropic.com/v1/messages',{
+    var res = await fetch(PROXY_URL,{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
-        'x-api-key': API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-request-proxy': 'true'
+        'x-api-key': API_KEY
       },
       body: JSON.stringify({
         model:'claude-sonnet-4-20250514',
@@ -979,13 +979,11 @@ Responde ÚNICAMENTE con un objeto JSON con esta estructura exacta (sin markdown
 }`;
 
   try{
-    var res = await fetch('https://api.anthropic.com/v1/messages',{
+    var res = await fetch(PROXY_URL,{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
-        'x-api-key': API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-request-proxy': 'true'
+        'x-api-key': API_KEY
       },
       body: JSON.stringify({
         model:'claude-sonnet-4-20250514',
